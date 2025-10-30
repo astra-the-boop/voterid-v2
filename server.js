@@ -1,4 +1,5 @@
 require("dotenv").config();
+import crypto from "crypto";
 const express = require("express");
 const axios = require("axios");
 const airtable = require("airtable");
@@ -17,8 +18,18 @@ const table = base(process.env.AIRTABLE_TBL_NAME);
 
 
 
-function cipherProcess(input){
-    return "testabc"
+export function cipherProcess(slackId, timestamp, index){
+    const base = `${slackId}:${timestamp}:${index}`;
+    const hash = crypto.createHash("sha1").update(base).digest("hex");
+    const n = parseInt(hash.slice(0,8),16);
+    let base36=n.toString(36).toUpperCase();
+    if(base36.length>6){
+        base36=base36.slice(-6);
+    }else{
+        base36=base36.padStart(6,"0");
+
+    }
+    return base36;
 }
 
 //the rest of the code below :3c
