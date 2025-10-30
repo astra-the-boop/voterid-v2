@@ -10,7 +10,10 @@ const clientId = process.env.CLIENT_ID;
 const clientSecret = process.env.CLIENT_SECRET;
 const redirectUri = `${process.env.REDIRECT_DOMAIN}/callback`;
 
+//airtable bs
 
+const base = new airtable({apiKey: process.env.AIRTABLE_KEY,}.base(process.env.AIRTABLE_DB_ID));
+const table = base(process.env.AIRTABLE_TBL_NAME);
 
 
 
@@ -41,6 +44,7 @@ async function sendDM(channelID, messageText, time){
 app.get("/", async (req, res) => {
     const code = req.query.code;
     const unixTimestamp = Date.now();
+
     try{
         const tokenRes = await axios.post("https://slack.com/api/openid.connect.token", null, {
             params: {
@@ -66,10 +70,22 @@ app.get("/", async (req, res) => {
         if(!userInfo.data.sub){
             return res.status(500).send(`Error: ${userInfo.data.sub}`);
         }
+        const voterId = cipherProcess(userInfo.data.sub);
+        await table.create([
+            {
+                fields:{
+                    "Slack ID": userInfo.data.sub,
+                    "Username": userInfo.data.name || "",
+                    "Email": userInfo.data.email || "",
+                    "Registration time": new Date(unixTimestamp),
+                    "Voter ID": voterId,
+                }
+            }
+        ])
 
         await sendDM(userInfo.data.sub, `:parliament-mini: *Thank you for signing up to vote in the August 2025 Hack Club elections.* :tada:
 
-> Time of retrieval *(THIS IS NOT THE VOTER ID)*: ${unixTimestamp} 
+> Time of retrieval: ${new Date(unixTimestamp).toISOString()} 
 > User Slack ID: ${userInfo.data.sub}
 
 _Not you? Contact us for support in <#C08FA68NV2T> so we can remove this vote!_`);
