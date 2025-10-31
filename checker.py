@@ -1,17 +1,19 @@
 import dotenv
 import os
-from airtable import Airtable
+from pyairtable import Table, Api
 
 dotenv.load_dotenv()
 
 key = os.getenv('AIRTABLE_KEY')
 dbid = os.getenv('AIRTABLE_DB_ID')
-tbl = os.getenv('AIRTABLE_TABLE_NAME')
+tbl = os.getenv('AIRTABLE_TBL_NAME')
 
-table = Airtable(dbid, tbl, api_key=key)
+api = Api(key)
+table = api.table(dbid, tbl)
+
 
 def check(slackId, voterId):
-    records = table.get_all(formula=f"{{SlackId}} = '{slackId}'")
+    records = table.all(formula=f"{{Slack ID}} = '{slackId}'")
 
     for record in records:
         if record['fields'].get("Voter ID") == voterId:
