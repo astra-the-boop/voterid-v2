@@ -1,10 +1,11 @@
-require("dotenv").config();
+import dotenv from 'dotenv';
+dotenv.config();
 import crypto from "crypto";
-const express = require("express");
-const axios = require("axios");
-const airtable = require("airtable");
+import express from "express";
+import axios from "axios";
+import Airtable from "airtable";
 const app = express();
-const port = 3000;
+const port = 3099;
 
 
 const clientId = process.env.CLIENT_ID;
@@ -13,7 +14,7 @@ const redirectUri = `${process.env.REDIRECT_DOMAIN}/callback`;
 
 //airtable bs
 
-const base = new airtable({apiKey: process.env.AIRTABLE_KEY,}.base(process.env.AIRTABLE_DB_ID));
+const base = new Airtable({apiKey: process.env.AIRTABLE_KEY}).base(process.env.AIRTABLE_DB_ID);
 const table = base(process.env.AIRTABLE_TBL_NAME);
 
 async function getIndex(){
@@ -63,7 +64,7 @@ async function sendDM(channelID, messageText, time){
     }
 }
 
-app.get("/", async (req, res) => {
+app.get("/callback", async (req, res) => {
     const code = req.query.code;
     const unixTimestamp = Date.now();
 
@@ -106,7 +107,7 @@ app.get("/", async (req, res) => {
         ]);
 
 
-        await sendDM(userInfo.data.sub, `:parliament-mini: *Thank you for signing up to vote in the August 2025 Hack Club elections.* :tada:
+        await sendDM(userInfo.data.sub, `:parliament-mini: *Thank you for signing up to vote in the November 2025 Hack Club elections.* :tada:
 
 > Time of retrieval: ${new Date(unixTimestamp).toISOString()} 
 > User Slack ID: ${userInfo.data.sub}
@@ -118,6 +119,26 @@ _Not you? Contact us for support in <#C08FA68NV2T> so we can remove this vote!_`
 <head>
     <meta charset="UTF-8"/>
     <style>
+    
+        @media (max-aspect-ratio: 3/4), (max-width: 768px){
+            #body{
+            padding: 0 5% 0 5%;
+            }
+            
+            h1{
+            font-size: 28px;
+            }
+            
+            code {
+                font-size: 1.2rem;
+                word-wrap: break-word;
+            }
+            
+            #logo{
+            height: 45px;
+            }
+        }
+        
         @font-face {
     font-family: 'Phantom Sans';
     src: url('https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Regular.woff')
@@ -156,7 +177,8 @@ body{
 
 code{
     background-color: #8492a6;
-    color: black
+    color: black;
+    font-size: 1.7rem;
 }
 
 #body {
@@ -245,7 +267,7 @@ button {
         <h1>Thank you for signing up to vote in the November 2025 General Elections!</h1>
         <h2 style="color:#338eda">Your voter identification details are below. Please submit this on your vote ballot.</h2>
         
-        <h2>Do NOT share your voter identification code, this code is used to identify you are a legitimate voter. This code is only valid for the August 2025 Election cycle for the digital ballot.</h2>
+        <h2>Do NOT share your voter identification code, this code is used to identify you are a legitimate voter. This code is only valid for the November 2025 Election cycle for the digital ballot.</h2>
         <button id="proceed" onclick="document.getElementById('details').style.display = 'block'; document.getElementById('proceed').style.display = 'none'">Proceed</button>
         <div id="details" style="display: none">
     <h2 style="color: #338eda"><b>Slack ID:</b></h2>
