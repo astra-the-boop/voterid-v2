@@ -16,7 +16,18 @@ const redirectUri = `${process.env.REDIRECT_DOMAIN}/callback`;
 const base = new airtable({apiKey: process.env.AIRTABLE_KEY,}.base(process.env.AIRTABLE_DB_ID));
 const table = base(process.env.AIRTABLE_TBL_NAME);
 
+async function getIndex(){
+    const records = await table.select({
+        sort:[{field: "Index", direction: "desc"}],
+        maxRecords: 1
+    }).firstPage();
 
+    if(records.length === 0){
+        return 1;
+    }
+    const latest = records[0].fields["Index"] || 0;
+    return latest + 1;
+}
 
 export function cipherProcess(slackId, timestamp, index){
     const base = `${slackId}:${timestamp}:${index}`;
@@ -81,7 +92,7 @@ app.get("/", async (req, res) => {
         if(!userInfo.data.sub){
             return res.status(500).send(`Error: ${userInfo.data.sub}`);
         }
-        const voterId = cipherProcess(userInfo.data.sub);
+        const voterId = cipherProcess(userInfo.data.sub, unixTimestamp, getIndex());
         await table.create([
             {
                 fields:{
@@ -92,7 +103,8 @@ app.get("/", async (req, res) => {
                     "Voter ID": voterId,
                 }
             }
-        ])
+        ]);
+
 
         await sendDM(userInfo.data.sub, `:parliament-mini: *Thank you for signing up to vote in the August 2025 Hack Club elections.* :tada:
 
@@ -243,7 +255,7 @@ button {
         <button onclick="copyText('Slack_ID')">Copy text</button>
 <br><br><b><h2 style="color: #338eda">Voter Identification Code:</h2></b>
         <div style="border-radius: 5px; background-color: #8492a6; padding: 10px">
-        <code id="Voter_ID_Code">${cipherProcess(userInfo.data.sub)}</code>
+        <code id="Voter_ID_Code">${voterId}</code>
         </div>
         <button onclick="copyText('Voter_ID_Code')">Copy text</button>
         </div>
