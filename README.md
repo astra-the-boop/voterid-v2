@@ -19,6 +19,13 @@ Select and copy, or click on the "Copy" button to save the code to your clipboar
 ## Hosting Guide:
 - Create a Slack app on [Slack API](https://api.slack.com)
 - Create a base on [Airtable](https://airtable.com)
+- Create the following fields
+  - Text: "Slack ID"
+  - Text: "Username"
+  - Email: "Email"
+  - Text: "Registration time"
+  - Text: "Voter ID"
+  - Autonumber: "Index"
 - Get your Airtable API key at [https://airtable.com/create/tokens](https://airtable.com/create/tokens)
 ```
 The bot should have the following:
