@@ -13,18 +13,15 @@
 
 > We generate this code by passing your Slack ID  which we get directly from Slack's API through an algorithm to ensure security!
 
-If you're on the digital ballot page, just select and copy, or click on the "Copy" button to save the code to your clipboard
-
-If you're on the physical ballot page, copy down the characters given to you or fill in a box if told to!
-
-> This one is actually a bit more interesting, we pass this through another hashing algorithm that's a bit more limited to 6 non-case-sensitive alphanumerical characters for the Voter ID and an integer between 0 and 2 (Matching Blocks A, B, and C) for the Voter Block!
+Select and copy, or click on the "Copy" button to save the code to your clipboard.
 
 ---
 ## Hosting Guide:
-- Create a Slack apps on [Slack API](https://api.slack.com)
--
+- Create a Slack app on [Slack API](https://api.slack.com)
+- Create a base on [Airtable](https://airtable.com)
+- Get your Airtable API key at [https://airtable.com/create/tokens](https://airtable.com/create/tokens)
 ```
-Both boths should have the following:
+The bot should have the following:
 
 Token with: 
 connections:write, authorizations:read,app_configurations:write
@@ -35,7 +32,7 @@ chat:write, im:write, users:read
 User token scopes:
 identity.basic, openid
 
-Bot 1 should have its Redirect URL be https://<your domain>/callback
+The bot should have its Redirect URL be https://<your domain>/callback
 ```
 - Install [node.js](https://nodejs.org/en)
 - Create a `.env` file in the root directory
